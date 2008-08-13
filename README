@@ -1,0 +1,67 @@
+c-repl: a C read-eval-print loop.
+Copyright (C) 2008 Evan Martin <martine@danga.com>
+
+Many programming languages come with a REPL (read-eval-print loop),
+which allows you to type in code line by line and see what it does. This
+is quite useful for prototyping, experimentation, and debugging code.
+
+Other programming languages, and especially C, use a "compile-run"
+model, and don't provide a REPL. Let's fix that.
+
+== Dependencies
+- GHC 6.8
+- gcc
+- gccxml and hexpat
+  (http://hackage.haskell.org/cgi-bin/hackage-scripts/package/hexpat)
+- gdb and hgdbmi
+  (http://hackage.haskell.org/cgi-bin/hackage-scripts/package/hgdbmi)
+
+Debian/Ubuntu users on recent releases can do something like:
+  sudo apt-get install ghc6 gccxml
+hexpat and hgdbmi can be fetched and installed from Hackage via the
+above URLs or via cabal-get.
+
+== Building
+The install procedure hasn't quite been worked out yet.  For now you can
+run c-repl from within the source tree:
+  runhaskell Setup.lhs configure
+  runhaskell Setup.lhs build
+  ./dist/build/c-repl/c-repl
+
+== Usage
+Type normal lines of C code and hit enter.  Trailing semicolons are
+optional.  All variable and function declarations are implicitly global,
+but can be initialized as if they were locals.
+  > int x = 3
+  > printf("at %p, %d\n", &x, x)
+  at 0xb7f4a550, 3
+  > FILE* f = fopen("README", "r")
+
+Bring in more headers by writing #include statements.  Library functions
+that are in scope should be tab-completable at the prompt.
+  > #include <stdlib.h>
+  > op<TAB>
+  open            open_memstream  openat64        
+  open64          openat          
+  > open
+
+== How it works
+The approach is surprisingly simple: for each line of code you enter, we
+compile a shared object in the background. If the compilation succeeds,
+the object is loaded into a child process via dlopen().  Parsing of C
+#includes uses gccxml.  (Unfortunately, I can't figure out how to use
+gccxml to parse the user's input, and due to the complexity of parsing C
+the input parser is currently hacky and heuristic.)
+
+== Debugging
+c-repl currently can take one flag, "-v", which causes it to output the
+internal code that it's generating.  Please include this output with bug
+reports.
+
+== Credit
+The original idea is due to Satoru Takabayashi (http://0xcc.net), who
+was responsible for a prototype implementation and advice on the
+original version.
+
+
+vim: set tw=72 :

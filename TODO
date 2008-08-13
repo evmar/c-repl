@@ -1,0 +1,4 @@
+- .l command for bringing a library
+- ? command for help (and manpages?)
+- gdb support for printing variable contents
+- record command history to ~/.c-repl ?

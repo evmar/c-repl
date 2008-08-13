@@ -1,0 +1,20 @@
+Cabal-Version: >= 1.2
+Name: c-repl
+Version: 0.1
+Synopsis: C read-eval-print loop
+Category: Development
+License: BSD3
+License-File: LICENSE
+Author: Evan Martin
+Maintainer: martine@danga.com
+Copyright: (c) 2008 Evan Martin <martine@danga.com>
+Homepage: http://neugierig.org/software/c-repl/
+Extra-Source-Files: child.c, README
+
+Executable c-repl
+  Main-Is: Repl.hs
+  Other-Modules: Child, CodeSnippet, GCCXML
+  Build-Depends:
+    base, bytestring, containers, directory, filepath, HUnit, mtl, parsec,
+    process, readline, unix, hexpat == 0.2, hgdbmi == 0.1
+
