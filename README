@@ -17,9 +17,18 @@ model, and don't provide a REPL. Let's fix that.
   (http://hackage.haskell.org/cgi-bin/hackage-scripts/package/hgdbmi)
 
 Debian/Ubuntu users on recent releases can do something like:
-  sudo apt-get install ghc6 gccxml
+  sudo apt-get install ghc6 gccxml libghc6-parsec-dev libghc6-mtl-dev \
+                       libghc6-hunit-dev
 hexpat and hgdbmi can be fetched and installed from Hackage via the
-above URLs or via cabal-get.
+above URLs or via cabal-get, and they depend on
+  sudo apt-get install gdb libexpat1-dev c2hs
+
+If you get an error from c2hs like this:
+  /usr/include/bits/pthreadtypes.h:99: (column 6) [FATAL]
+  >>> Syntax error!
+  The symbol `;' does not fit here.
+then you unfortunately need a newer c2hs; the one in Ubuntu Hardy is
+at least recent enough.
 
 == Building
 The install procedure hasn't quite been worked out yet.  For now you can
