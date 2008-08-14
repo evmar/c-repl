@@ -17,4 +17,5 @@ Executable c-repl
   Build-Depends:
     base, bytestring, containers, directory, filepath, HUnit, mtl, parsec,
     process, readline, unix, hexpat == 0.2, hgdbmi == 0.1
+  Build-Tools: c2hs >= 0.15
 
