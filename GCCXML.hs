@@ -102,9 +102,9 @@ resolveType map unr = do
 -- references.
 symref :: SymbolId -> UnrSym
 symref id = UnrSym (\symbolmap ->
-  case M.lookup id symbolmap :: Either String UnrSym of
-    Left err -> Left $ "lookup failed: " ++ id
-    Right ok -> Right ok)
+  case M.lookup id symbolmap :: Maybe UnrSym of
+    Nothing -> Left $ "lookup failed: " ++ id
+    Just ok -> Right ok)
 
 -- The main parser/driver, @parse code@ returns either an error or a list of
 -- resolves Symbols.

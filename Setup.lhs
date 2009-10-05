@@ -13,12 +13,6 @@ patch in a compile and install step for the child program.
 > import Distribution.Verbosity
 > import System.FilePath ((</>))
 
-Since we depend on gcc anyway at runtime, I suppose it's harmless to pull in
-gcc here...
-
-> gccProgram :: Program
-> gccProgram = simpleProgram "gcc"
-
 > creplChildName :: String
 > creplChildName = "c-repl-child"
 
@@ -28,16 +22,16 @@ gcc here...
 > creplChildBuild :: Args -> BuildFlags -> PackageDescription
 >                 -> LocalBuildInfo -> IO ()
 > creplChildBuild args flags desc buildinfo = do
->   rawSystemProgramConf (buildVerbose flags) gccProgram (buildPrograms flags)
+>   rawSystemProgramConf (fromFlag $ buildVerbosity flags) gccProgram (withPrograms buildinfo)
 >       ["child.c", "-o", creplChildPath buildinfo, "-ldl"]
 
 > creplChildCopy :: Args -> CopyFlags -> PackageDescription
 >                -> LocalBuildInfo -> IO ()
 > creplChildCopy args flags desc buildinfo = do
 >   print "copy hook"
->   let dirs = absoluteInstallDirs desc buildinfo (copyDest flags)
+>   let dirs = absoluteInstallDirs desc buildinfo (fromFlag $ copyDest flags)
 >   print ("copying child to ", libexecdir dirs </> creplChildName)
->   copyFileVerbose (copyVerbose flags) (creplChildPath buildinfo)
+>   copyFileVerbose (fromFlag $ copyVerbosity flags) (creplChildPath buildinfo)
 >                   (libexecdir dirs </> creplChildName)
 
 > buildHooks = simpleUserHooks {
