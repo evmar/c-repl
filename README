@@ -15,13 +15,14 @@ model, and don't provide a REPL. Let's fix that.
   (http://hackage.haskell.org/cgi-bin/hackage-scripts/package/hexpat)
 - gdb and hgdbmi
   (http://hackage.haskell.org/cgi-bin/hackage-scripts/package/hgdbmi)
+- readline
 
 Debian/Ubuntu users on recent releases can do something like:
   sudo apt-get install ghc6 gccxml libghc6-parsec-dev libghc6-mtl-dev \
                        libghc6-hunit-dev
-hexpat and hgdbmi can be fetched and installed from Hackage via the
-above URLs or via cabal-get, and they depend on
-  sudo apt-get install gdb libexpat1-dev c2hs
+hexpat, hgdbmi, and readline can be fetched and installed from Hackage
+via the above URLs or via cabal-get, and they depend on
+  sudo apt-get install gdb libexpat1-dev c2hs libreadline-dev
 
 If you get an error from c2hs like this:
   /usr/include/bits/pthreadtypes.h:99: (column 6) [FATAL]
