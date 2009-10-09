@@ -16,6 +16,6 @@ Executable c-repl
   Other-Modules: Child, CodeSnippet, GCCXML
   Build-Depends:
     base, bytestring, containers, directory, filepath, HUnit, mtl, parsec,
-    process, readline, unix, hexpat == 0.2, hgdbmi == 0.1
+    process, readline, unix, hexpat == 0.9, hgdbmi == 0.1
   Build-Tools: c2hs >= 0.15
 

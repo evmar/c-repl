@@ -10,16 +10,17 @@ module GCCXML (
 import Prelude hiding (catch)
 import Control.Monad.Error
 import Control.Exception
-import qualified Data.ByteString.Lazy as BS
+import qualified Data.ByteString as BS
 import Data.Maybe (mapMaybe)
 import Data.List (intercalate)
 import qualified Data.Map as M
 import System.Exit
 import System.IO
 import System.Process
-import Text.XML.Expat.Tree as Expat
+import qualified Text.XML.Expat.Tree as Expat
 
 type XML = BS.ByteString
+type XMLNode = Expat.Node String String
 
 -- @runGCCXML code@ runs a gccxml process on |code|, returning the XML output
 -- or an error string on error.
@@ -115,14 +116,14 @@ symbols code = runErrorT $ do
   where
   parseSymbols :: XML -> Either String [Symbol]
   parseSymbols xml = do
-    tree <- case Expat.parse Nothing xml of
-              Just (Element root attrs tree) -> return tree
-              _ -> throwError "xml parse error"
+    tree <- case Expat.parseTree' Nothing xml of
+              Left err -> throwError (show err)
+              Right (Expat.Element root attrs tree) -> return tree
     let nodes = mapMaybe parseNode tree
     let symbolmap = M.fromList nodes
     mapM (resolve symbolmap . snd) nodes
-  parseNode :: Expat.Node -> Maybe (SymbolId, UnrSym)
-  parseNode (Element typ attrs kids) = do
+  parseNode :: XMLNode -> Maybe (SymbolId, UnrSym)
+  parseNode (Expat.Element typ attrs kids) = do
     sym <- parseSymbol typ attrs kids
     id <- lookup "id" attrs
     return (id, sym)
@@ -140,7 +141,7 @@ symbols code = runErrorT $ do
       innertype <- resolveType symbolmap (symref innertypeid)
       return $ ResSym $ Type $ constructor innertype
 
-  parseSymbol :: String -> [(String,String)] -> [Expat.Node] -> Maybe UnrSym
+  parseSymbol :: String -> [(String,String)] -> [XMLNode] -> Maybe UnrSym
   parseSymbol "Function" attrs kids = do
     name <- lookup "name" attrs
     when (isInternal name) Nothing
@@ -166,8 +167,8 @@ symbols code = runErrorT $ do
   parseSymbol "PointerType"     attrs _ = parseSymbolType1Arg attrs Pointer
   parseSymbol _ _ _ = Nothing
 
-  parseFunctionArg :: Expat.Node -> Maybe (UnrSym, String)
-  parseFunctionArg (Element "Argument" attrs _) = do
+  parseFunctionArg :: XMLNode -> Maybe (UnrSym, String)
+  parseFunctionArg (Expat.Element "Argument" attrs _) = do
     name <- lookup "name" attrs
     typeid <- lookup "type" attrs
     return (symref typeid, prettify name)
