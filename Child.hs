@@ -27,19 +27,20 @@ data Child = Child {
   childResponse :: Handle
 }
 
-findChildBinary :: IO (Either String FilePath)
+-- Compute the location of the child helper.
+findChildBinary :: IO (Maybe FilePath)
 findChildBinary = do
   let path = "dist/build/c-repl-child"
   ok1 <- isReadable path
   if ok1
-    then return (Right path)
+    then return (Just path)
     else do
       libexecdir <- Paths_c_repl.getLibexecDir
       let path = libexecdir ++ "/c-repl-child"
       ok2 <- isReadable path
       if ok2
-        then return (Right path)
-        else return (throwError "can't find child executable")
+        then return (Just path)
+        else return Nothing
   where
   isReadable path =
     do
@@ -47,14 +48,15 @@ findChildBinary = do
       return $ readable perms
     `catch` \e -> return False
 
+-- Create a new Child, starting the helper process.
 start :: IO (Either String Child)
 start = do
   (commandR,  commandW)  <- createPipe
   (responseR, responseW) <- createPipe
   childPath <- findChildBinary
   case childPath of
-    Left err -> return (Left err)
-    Right childPath -> do
+    Nothing -> return $ throwError "couldn't find helper binary"
+    Just childPath -> do
       phandle <- runProcess childPath
                      [show commandR, show responseW]
                      Nothing{-working dir-} Nothing{-env-}
@@ -64,9 +66,11 @@ start = do
       pidstr <- hGetLine responseH
       return $ Right $ Child phandle (read pidstr) commandH responseH
 
+-- Kill off a Child.
 stop :: Child -> IO ()
 stop child = terminateProcess (childPHandle child)
 
+-- Command a Child to run modules up to a given id.
 run :: Child -> Int -> IO (Either String ())
 run child entry = runErrorT (sendCommand >> awaitResponse) where
   command = show entry
