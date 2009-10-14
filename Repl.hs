@@ -1,6 +1,8 @@
 -- c-repl: a C read-eval-print loop.
 -- Copyright (C) 2008 Evan Martin <martine@danga.com>
 
+-- The main function and REPL handling.
+
 import Prelude hiding (log)
 import Control.Exception
 import Control.Monad

@@ -1,9 +1,17 @@
 -- c-repl: a C read-eval-print loop.
 -- Copyright (C) 2008 Evan Martin <martine@danga.com>
 
+-- This module parses REPL inputs.  We need to parse a
+-- declaration like "int x = foo()" because we compile that into a
+-- global declaration of x along with a call to an initializer.
+-- The code is pretty hacky but it passes the (inline) test suite.
+
 module CodeSnippet (
+  -- Parsed snippet of code, to the level of parsing we care about.
   CodeSnippet(..),
+  -- Parse an input into a CodeSnippet.
   parse,
+  -- Expose the test runner so we can use it via ghci.
   runTests
 ) where
 

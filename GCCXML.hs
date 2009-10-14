@@ -1,9 +1,16 @@
 -- c-repl: a C read-eval-print loop.
 -- Copyright (C) 2008 Evan Martin <martine@danga.com>
 
+-- This module parses GCCXML output, giving you a parse tree of C code.
+
 module GCCXML (
-  symbols,
   Symbol(..),
+
+  -- The main parser/driver, @symbols code@ returns either an error or a list of
+  -- resolved Symbols.
+  symbols,
+
+  -- Print a user-friendly version of a Symbol.
   showSymbol
 ) where
 
@@ -79,7 +86,6 @@ data Symbol = Function String [String]
             | Type CType
             deriving Show
 
--- Print a user-friendly version of a Symbol.
 showSymbol :: GCCXML.Symbol -> String
 showSymbol (Function name args) = name ++ "(" ++ intercalate ", " args ++ ")"
 showSymbol (Type typ) = showCType typ
@@ -107,8 +113,6 @@ symref id = UnrSym (\symbolmap ->
     Nothing -> Left $ "lookup failed: " ++ id
     Just ok -> Right ok)
 
--- The main parser/driver, @parse code@ returns either an error or a list of
--- resolves Symbols.
 symbols :: String -> IO (Either String [Symbol])
 symbols code = runErrorT $ do
   xml <- ErrorT $ runGCCXML code

@@ -1,7 +1,19 @@
 -- c-repl: a C read-eval-print loop.
 -- Copyright (C) 2008 Evan Martin <martine@danga.com>
 
-module Child where
+-- This module is responsible for managing the child process that actually
+-- executes the code snippets.
+
+module Child (
+  Child(..),
+
+  -- Start/stop a child subprocess.
+  start,
+  stop,
+
+  -- Instruct a child subprocess to run some code.
+  run
+) where
 
 import Prelude hiding (catch)
 import Control.Concurrent
