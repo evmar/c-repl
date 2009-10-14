@@ -59,12 +59,12 @@ parse input = do
         else let (typ, var) = (init idents, last idents)
              in parseDecl typ var rest
   where
-  parseDecl typ var ((npos, Punct "("):rest) = 
+  parseDecl typ var ((npos, Punct "("):rest) =
     case dropWhile (\(_,tok) -> tok /= Punct ")") rest of
       (rparen:(next,_):rest) ->
         return $ FunDecl (substr Nothing (Just next) input)
                          (substr (Just next) Nothing input)
-      _ -> Left $ "couldn't find rparen" 
+      _ -> Left $ "couldn't find rparen"
   parseDecl typ var rest =
     let nextpos = case rest of
                     ((pos, tok):rest) | tok /= Punct ";" -> Just pos
