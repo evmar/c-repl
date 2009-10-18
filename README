@@ -32,11 +32,16 @@ then you unfortunately need a newer c2hs; the one in Ubuntu Hardy is
 at least recent enough.
 
 == Building
-The install procedure hasn't quite been worked out yet.  For now you can
-run c-repl from within the source tree:
-  runhaskell Setup.lhs configure
-  runhaskell Setup.lhs build
-  ./dist/build/c-repl/c-repl
+Almost list a normal cabal-managed app:
+  cabal configure
+  cabal install
+but with one major exception, you must also run this at the end.
+  cabal copy
+
+Why is this extra step necessary?  Read Setup.lhs and tell me what I've
+done wrong; I've probably spent as much time trying to figure out Cabal
+as I have writing the actual app.  I'd love to apply a patch from someone
+smarter than me.
 
 == Usage
 Type normal lines of C code and hit enter.  Trailing semicolons are
